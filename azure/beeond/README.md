@@ -1,0 +1,27 @@
+# PBS hook for beeOND integration
+Notes:
+To run this hook you will need to do the following
+- install BeeOND on the compute nodes
+- enable passwordless ssh for root on the compute nodes. 
+- enable pdsh on your cluster (optional for faster setup time on BeeOND. Not yet tested)
+ - modify the hook to include the pdsh start option for the beeond script ( this will reduce startup time of BeeOND).o
+- Modify the BeeGFS configuration files and make them available to the compute nodes ( Only if you want something other then the default BeeGFS configuration).
+
+Files:
+- beeond.json: Configurations file
+- beeond.py: Hook File
+
+Create the hook and configure it in PBS
+c h beeond
+s h beeond event="execjob_begin,execjob_end"
+s h beeond alarm=300
+i h beeond application/x-config default beeond.json
+i h beeond application/x-python default beeond.py
+
+
+Configuration options:
+<Need to be added>
+
+Usage:
+Currently to get a beeond file system the job must request place=excl. If this is the case, the hook will create a beeond file system. This will be modified in the future (suggestions welcome for how you would like to see this done)
+

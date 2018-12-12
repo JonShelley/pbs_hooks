@@ -1,0 +1,10 @@
+{
+    "start_cmd"             : "beeond start",
+    "mnt_pnt"               : "/mnt/beeond",
+    "stop_cmd"              : "beeond stop",
+    "cfg_path"              : "/etc/beeond",
+    "stop_args"             : "-L -d -c",
+    "disk_type"             : "ssd",
+    "ssd_disk_loc"          : "/mnt/resource/beeond",
+    "ram_disk_loc"          : "/mnt/pbs_ramdisk"
+}
