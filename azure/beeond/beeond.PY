@@ -152,11 +152,20 @@ try:
         # See if the job requests beeond
         # [Rework] Look for ENV that requests beeond or do it at the chunk level
         if "place" in j.Resource_List:
-            pbs.logmsg(pbs.EVENT_DEBUG, "Not an exclusive job: %s" % (j.Resource_List["place"]))
             results = str(j.Resource_List["place"]).find("excl")
             pbs.logmsg(pbs.EVENT_DEBUG, "Results: %s" % (results))
             if str(j.Resource_List["place"]).find("excl") == -1:
+                pbs.logmsg(pbs.EVENT_DEBUG, "Not an exclusive job: %s" % (j.Resource_List["place"]))
                 e.accept()
+            else:
+                # Check to see if PBS_JOB_FS=BEEOND is in the job environment
+                env = j.Variable_List
+                env = env.split(",")
+                env_vars = {}
+                for item in env:
+                    tmp = item.split("=")
+                    env_vars[tmp[0]] = tmp[1]
+                pbs.logmsg(pbs.EVENT_DEBUG, "Environment Variables: %s" % (env_vars))
 
         # Read in the config file
         cfg = read_cfg()
