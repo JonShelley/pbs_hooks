@@ -5,3 +5,6 @@
 /opt/pbs/bin/qmgr -c "create hook setup_jobdir"
 /opt/pbs/bin/qmgr -c "set hook setup_jobdir event=\"execjob_begin,execjob_end\""
 /opt/pbs/bin/qmgr -c "import hook setup_jobdir application/x-python default setup_jobdir.py"
+/opt/pbs/bin/qmgr -c "create hook stop_wa"
+/opt/pbs/bin/qmgr -c "set hook stop_wa event=\"execjob_begin,execjob_end\""
+/opt/pbs/bin/qmgr -c "import hook stop_wa application/x-python default stop_waagent.py"
