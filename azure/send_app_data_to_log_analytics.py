@@ -86,17 +86,17 @@ shared_key = cfg["shared_key"]
 e = pbs.event()
 j = e.job
 
-# Read log_type from the environment
-if "PBS_AZURE_LA_LOG_TYPE" in j.Variable_List:
-    log_type = j.Variable_List["PBS_AZURE_LA_LOG_TYPE"]
-
 # Read the filename to upload from the environment
-if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List:
-    data_file = j.Variable_List["PBS_AZURE_LA_DATA_FILE"]
+if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.Variable_List:
+    job_dir = j.Variable_List["PBS_O_WORKDIR"]
+    debug("Proceed to add data to log analytics")
+    log_type = j.Variable_List["PBS_AZURE_LA_LOG_TYPE"]
+    data_filename = j.Variable_List["PBS_AZURE_LA_DATA_FILE"]
     if os.path.isfile(data_file):
         try:
-            with open(data_file) as datafile:
-                json_data = json.load(datafile)
+            data_filename = job_dir + os.sep + data_filename
+            with open(data_filename) as data_fp:
+                json_data = json.load(data_fp)
                 debug("data file contents: %s" % json_data)
                 post_data(customer_id, shared_key, json_data, log_type)
                 debug("Completed sending data to log anaylitics")
