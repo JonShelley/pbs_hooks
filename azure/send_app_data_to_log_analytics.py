@@ -97,27 +97,30 @@ e = pbs.event()
 j = e.job
 
 # Read the filename to upload from the environment
-if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.Variable_List:
-    job_dir = j.Variable_List["PBS_O_WORKDIR"]
-    debug("Proceed to add data to log analytics")
-    log_type = j.Variable_List["PBS_AZURE_LA_LOG_TYPE"]
-    debug("Log type: %s" % log_type)
-    data_filename = j.Variable_List["PBS_AZURE_LA_DATA_FILE"]
-    data_filename = job_dir + os.sep + data_filename
-    debug("Data filename: %s" % data_filename)
-    if os.path.isfile(data_filename):
-        try:
+try:
+    if not j.in_ms_mom():
+        debug("Not on the ms node")
+        e.accept()
+    if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.Variable_List:
+        job_dir = j.Variable_List["PBS_O_WORKDIR"]
+        debug("Proceed to add data to log analytics")
+        log_type = j.Variable_List["PBS_AZURE_LA_LOG_TYPE"]
+        debug("Log type: %s" % log_type)
+        data_filename = j.Variable_List["PBS_AZURE_LA_DATA_FILE"]
+        data_filename = job_dir + os.sep + data_filename
+        debug("Data filename: %s" % data_filename)
+        if os.path.isfile(data_filename):
             with open(data_filename) as data_fp:
                 json_data = json.load(data_fp)
                 json_str = json.dumps(json_data)
                 debug("data file contents: %s" % json_str)
                 post_data(customer_id, shared_key, json_str, log_type)
                 debug("Completed sending data to log anaylitics")
-        except SystemExit:
-            debug("Exited with SystemExit")  
-        except:
-            debug("Failed to post data to log analytics")
-            error(traceback.format_exc())
-            raise
-    else:
-        debug("Data file: %s was not found" % data_filename)
+        else:
+            debug("Data file: %s was not found" % data_filename)
+except SystemExit:
+    debug("Exited with SystemExit")  
+except:
+    debug("Failed to post data to log analytics")
+    error(traceback.format_exc())
+    raise
