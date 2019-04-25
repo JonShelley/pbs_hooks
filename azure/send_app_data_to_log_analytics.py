@@ -81,7 +81,7 @@ def post_data(customer_id, shared_key, body, log_type):
     if (response.status_code >= 200 and response.status_code <= 299):
         debug('Accepted')
     else:
-        debug("Response code: {}".format(response.status_code))
+        debug("Rejected - Response code: {}".format(response.status_code))
 
 # Read in the config file
 cfg = parse_config_file()
