@@ -48,6 +48,7 @@ def parse_config_file():
 
 # Build the API signature
 def build_signature(customer_id, shared_key, date, content_length, method, content_type, resource):
+    debug("Entering build_signature")
     x_headers = 'x-ms-date:' + date
     string_to_hash = method + "\n" + str(content_length) + "\n" + content_type + "\n" + x_headers + "\n" + resource
     bytes_to_hash = bytes(string_to_hash).encode('utf-8')  
@@ -58,6 +59,7 @@ def build_signature(customer_id, shared_key, date, content_length, method, conte
 
 # Build and send a request to the POST API
 def post_data(customer_id, shared_key, body, log_type):
+    debug("Entering post_data")
     method = 'POST'
     content_type = 'application/json'
     resource = '/api/logs'
@@ -72,12 +74,14 @@ def post_data(customer_id, shared_key, body, log_type):
         'Log-Type': log_type,
         'x-ms-date': rfc1123date
     }
-
+    
+    debug("Body: %s" % body)
+    debug("Body type: %s" % type(body))
     response = requests.post(uri,data=body, headers=headers)
     if (response.status_code >= 200 and response.status_code <= 299):
-        print 'Accepted'
+        debug('Accepted')
     else:
-        print "Response code: {}".format(response.status_code)
+        debug("Response code: {}".format(response.status_code))
 
 # Read in the config file
 cfg = parse_config_file()
@@ -97,6 +101,7 @@ if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.
     job_dir = j.Variable_List["PBS_O_WORKDIR"]
     debug("Proceed to add data to log analytics")
     log_type = j.Variable_List["PBS_AZURE_LA_LOG_TYPE"]
+    debug("Log type: %s" % log_type)
     data_filename = j.Variable_List["PBS_AZURE_LA_DATA_FILE"]
     data_filename = job_dir + os.sep + data_filename
     debug("Data filename: %s" % data_filename)
@@ -105,7 +110,7 @@ if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.
             with open(data_filename) as data_fp:
                 json_data = json.load(data_fp)
                 debug("data file contents: %s" % json_data)
-                post_data(customer_id, shared_key, json_data, log_type)
+                post_data(customer_id, shared_key, "%s" % json_data, log_type)
                 debug("Completed sending data to log anaylitics")
         except SystemExit:
             debug("Exited with SystemExit")  
