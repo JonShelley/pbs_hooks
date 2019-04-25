@@ -8,6 +8,10 @@ import hashlib
 import hmac
 import base64
 import traceback
+import sys
+
+# Add standard python module path
+sys.path.append('/lib/python2.7/site-packages')
 
 def debug(msg):
     pbs.logmsg(pbs.EVENT_DEBUG3, 'debug: %s' % msg)
