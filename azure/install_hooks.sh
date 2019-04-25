@@ -8,3 +8,7 @@
 /opt/pbs/bin/qmgr -c "create hook stop_wa"
 /opt/pbs/bin/qmgr -c "set hook stop_wa event=\"execjob_begin,execjob_end\""
 /opt/pbs/bin/qmgr -c "import hook stop_wa application/x-python default stop_waagent.py"
+/opt/pbs/bin/qmgr -c "create hook azure_la"
+/opt/pbs/bin/qmgr -c "set hook azure_la event=\"execjob_epilogue\""
+/opt/pbs/bin/qmgr -c "import hook azure_la application/x-config default send_app_data_to_log_analytics.json"
+/opt/pbs/bin/qmgr -c "import hook azure_la application/x-python default send_app_data_to_log_analytics.py"
