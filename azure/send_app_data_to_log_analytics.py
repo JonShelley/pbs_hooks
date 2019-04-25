@@ -109,8 +109,9 @@ if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.
         try:
             with open(data_filename) as data_fp:
                 json_data = json.load(data_fp)
-                debug("data file contents: %s" % json_data)
-                post_data(customer_id, shared_key, "%s" % json_data, log_type)
+                json_str = json.dumps(json_data)
+                debug("data file contents: %s" % json_str)
+                post_data(customer_id, shared_key, json_str, log_type)
                 debug("Completed sending data to log anaylitics")
         except SystemExit:
             debug("Exited with SystemExit")  
