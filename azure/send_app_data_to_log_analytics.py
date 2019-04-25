@@ -98,9 +98,10 @@ if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.
     debug("Proceed to add data to log analytics")
     log_type = j.Variable_List["PBS_AZURE_LA_LOG_TYPE"]
     data_filename = j.Variable_List["PBS_AZURE_LA_DATA_FILE"]
-    if os.path.isfile(data_file):
+    data_filename = job_dir + os.sep + data_filename
+    debug("Data filename: %s" % data_filename)
+    if os.path.isfile(data_filename):
         try:
-            data_filename = job_dir + os.sep + data_filename
             with open(data_filename) as data_fp:
                 json_data = json.load(data_fp)
                 debug("data file contents: %s" % json_data)
@@ -113,4 +114,4 @@ if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.
             error(traceback.format_exc())
             raise
     else:
-        debug("Data file: %s was not found" % data_file)
+        debug("Data file: %s was not found" % data_filename)
