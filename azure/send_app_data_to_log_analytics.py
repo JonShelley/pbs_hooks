@@ -1,17 +1,19 @@
 #!/usr/bin/env python2.7
 
-#import pbs
+import pbs
 import json
-import requests
 import datetime
 import hashlib
 import hmac
 import base64
 import traceback
 import sys
+import os
 
 # Add standard python module path
 sys.path.append('/lib/python2.7/site-packages')
+
+import requests
 
 def debug(msg):
     pbs.logmsg(pbs.EVENT_DEBUG3, 'debug: %s' % msg)
