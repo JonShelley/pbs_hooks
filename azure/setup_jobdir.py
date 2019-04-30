@@ -37,7 +37,7 @@ if e.type == pbs.EXECJOB_BEGIN:
     # Create a local dir on the local disk
     if path.isdir(base_loc):
         new_dir = base_loc + sep + j.id
-        if not os.path.isdir(new_dir):
+        if not path.isdir(new_dir):
             mkdir(new_dir, 0770)
             chown(new_dir, uid, gid)
         else:
