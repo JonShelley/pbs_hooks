@@ -102,12 +102,11 @@ try:
         debug("Not on the ms node")
         e.accept()
     if "PBS_AZURE_LA_JSON_FILE_DIR" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.Variable_List:
-        job_dir = j.Variable_List["PBS_O_WORKDIR"]
         debug("Proceed to add data to log analytics")
         log_type = j.Variable_List["PBS_AZURE_LA_LOG_TYPE"]
         debug("Log type: %s" % log_type)
-        data_filename = j.Variable_List["PBS_AZURE_LA_JSON_FILE_DIR"]
-        data_filename = job_dir + os.sep + data_filename
+        data_file_dir = j.Variable_List["PBS_AZURE_LA_JSON_FILE_DIR"]
+        data_filename = data_file_dir + os.sep + j.id + ".json"
         debug("Data filename: %s" % data_filename)
         if os.path.isfile(data_filename):
             with open(data_filename) as data_fp:
