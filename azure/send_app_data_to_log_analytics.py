@@ -101,12 +101,12 @@ try:
     if not j.in_ms_mom():
         debug("Not on the ms node")
         e.accept()
-    if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.Variable_List:
+    if "PBS_AZURE_LA_DATA_DIR" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.Variable_List:
         job_dir = j.Variable_List["PBS_O_WORKDIR"]
         debug("Proceed to add data to log analytics")
         log_type = j.Variable_List["PBS_AZURE_LA_LOG_TYPE"]
         debug("Log type: %s" % log_type)
-        data_filename = j.Variable_List["PBS_AZURE_LA_DATA_FILE"]
+        data_filename = j.Variable_List["PBS_AZURE_LA_DATA_DIR"]
         data_filename = job_dir + os.sep + data_filename
         debug("Data filename: %s" % data_filename)
         if os.path.isfile(data_filename):
