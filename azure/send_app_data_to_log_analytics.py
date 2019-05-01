@@ -9,6 +9,7 @@ import base64
 import traceback
 import sys
 import os
+import subprocess
 
 # Add standard python module path
 sys.path.append('/lib/python2.7/site-packages')
@@ -16,11 +17,20 @@ sys.path.append('/lib/python2.7/site-packages')
 import requests
 
 def debug(msg):
-    pbs.logmsg(pbs.EVENT_DEBUG3, 'debug: %s' % msg)
+    pbs.logmsg(pbs.EVENT_DEBUG3, 'LA debug: %s' % msg)
 
 
 def error(msg):
-    pbs.logmsg(pbs.EVENT_ERROR, 'error: %s' % msg)
+    pbs.logmsg(pbs.EVENT_ERROR, 'LA error: %s' % msg)
+
+
+def run_cmd(cmd):
+    debug("Cmd: %s" % cmd)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    if proc.returncode != 0:
+        debug('cmd failed!\n\tstdout="%s"\n\tstderr="%s"' % (stdout, stderr))
+    return stdout, stderr
 
 
 def parse_config_file():
@@ -101,17 +111,24 @@ try:
     if not j.in_ms_mom():
         debug("Not on the ms node")
         e.accept()
-    if "PBS_AZURE_LA_DATA_FILE" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.Variable_List:
-        job_dir = j.Variable_List["PBS_O_WORKDIR"]
+    if "PBS_AZURE_LA_JSON_FILE_DIR" in j.Variable_List and "PBS_AZURE_LA_LOG_TYPE" in j.Variable_List:
         debug("Proceed to add data to log analytics")
         log_type = j.Variable_List["PBS_AZURE_LA_LOG_TYPE"]
         debug("Log type: %s" % log_type)
-        data_filename = j.Variable_List["PBS_AZURE_LA_DATA_FILE"]
-        data_filename = job_dir + os.sep + data_filename
+        data_file_dir = j.Variable_List["PBS_AZURE_LA_JSON_FILE_DIR"]
+        data_filename = data_file_dir + os.sep + j.id + ".json"
         debug("Data filename: %s" % data_filename)
+        # Get VM Instance
+        cmd = [ "curl", "-s", "-H", "Metadata:true", "http://169.254.169.254/metadata/instance?api-version=2017-12-01"]
+        stdout, stderr = run_cmd(cmd)
+        json_vm = json.loads(stdout)
+        vm_size=json_vm["compute"]["vmSize"]
+        debug("json_vm vm_inst: %s" % vm_size)
+        
         if os.path.isfile(data_filename):
             with open(data_filename) as data_fp:
                 json_data = json.load(data_fp)
+                json_data["vmSize"] = vm_size
                 json_str = json.dumps(json_data)
                 debug("data file contents: %s" % json_str)
                 post_data(customer_id, shared_key, json_str, log_type)
